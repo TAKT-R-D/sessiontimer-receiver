@@ -42,7 +42,11 @@ What they **do**:
 
 What they **never** do:
 
-- No shell commands, no `eval`, no file reads or writes, no downloads.
+- No shell interpretation, no `eval`, no file reads or writes, no downloads. (The Python
+  helper invokes exactly two fixed macOS built-ins — `/usr/bin/osascript` and
+  `/usr/bin/dns-sd` — with fixed argument lists; the PowerShell helper uses the Windows
+  `SendKeys` API and, if installed, Apple's `dns-sd.exe`. Nothing from the network ever
+  reaches those commands — a request can only select one of the two fixed arrow keys.)
 - **No auto-update.** A script never replaces itself; updates happen only when you
   re-download from this repository.
 - No keystrokes outside the fixed two-arrow vocabulary, regardless of the request.
