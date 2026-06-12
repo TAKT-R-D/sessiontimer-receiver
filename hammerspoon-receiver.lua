@@ -10,9 +10,10 @@
 -- Any other request gets "404 not found" and presses nothing.
 -- No shell commands, no eval, no file reads/writes, no downloads, no auto-update.
 --
--- The receiver is OFF by default. A "○ Clicker" item appears in the macOS menu
--- bar: click it to start listening before your talk (it turns into "● Clicker"),
--- click again to stop after. It only listens while you have switched it on.
+-- The receiver is OFF by default. A "○ Slide Receiver" item appears in the macOS
+-- menu bar: click it to start listening before your talk (it turns into
+-- "● Slide Receiver"), click again to stop after. It only listens while you have
+-- switched it on.
 --
 -- The keystroke goes to the FRONTMOST app, so your slideshow (Keynote, PowerPoint,
 -- Google Slides in a browser, a PDF…) must be the front window in presentation mode.
@@ -21,7 +22,7 @@
 --   1. Install Hammerspoon (https://www.hammerspoon.org/) and grant it Accessibility
 --      (System Settings → Privacy & Security → Accessibility).
 --   2. Copy this file's contents into ~/.hammerspoon/init.lua (or `require` it from there).
---   3. Hammerspoon menu bar icon → "Reload Config" → the "○ Clicker" toggle appears.
+--   3. Hammerspoon menu bar icon → "Reload Config" → the "○ Slide Receiver" toggle appears.
 -- Uninstall: remove these lines from ~/.hammerspoon/init.lua and reload (or quit
 -- Hammerspoon). Nothing else was installed or written anywhere.
 
@@ -43,7 +44,7 @@ clickerMenu = hs.menubar.new()
 
 local function refreshMenu()
     if clickerMenu then
-        clickerMenu:setTitle(clickerServer and "● Clicker" or "○ Clicker")
+        clickerMenu:setTitle(clickerServer and "● Slide Receiver" or "○ Slide Receiver")
     end
 end
 
@@ -96,4 +97,4 @@ if clickerMenu then
         if clickerServer then clickerStop() else clickerStart() end
     end)
 end
-refreshMenu()  -- starts OFF — click "○ Clicker" in the menu bar when you present
+refreshMenu()  -- starts OFF — click "○ Slide Receiver" in the menu bar when you present

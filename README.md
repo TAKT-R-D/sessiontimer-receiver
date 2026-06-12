@@ -47,7 +47,7 @@ What they **never** do:
   re-download from this repository.
 - No keystrokes outside the fixed two-arrow vocabulary, regardless of the request.
 - Nothing listens unless you switched it on: the Hammerspoon receiver is **off by
-  default** with a menu-bar toggle (○/● Clicker); the Python and PowerShell helpers
+  default** with a menu-bar toggle (○/● Slide Receiver); the Python and PowerShell helpers
   stop with Ctrl-C. Uninstall = delete the file.
 
 Honest caveat: while a receiver is running, **anyone on the same network** could send it
@@ -69,12 +69,12 @@ to a signed .app, not to a terminal).
    (System Settings → Privacy & Security → Accessibility).
 2. Copy the contents of [`hammerspoon-receiver.lua`](hammerspoon-receiver.lua) into
    `~/.hammerspoon/init.lua`.
-3. Hammerspoon menu bar icon → **Reload Config**. A **○ Clicker** item appears in the
-   menu bar.
-4. Click **○ Clicker** to start listening before your talk (it becomes **● Clicker**
-   and an alert shows the advertised name, e.g. `Clicker on YourMac`). Click it again
-   to stop after — the receiver is off by default and only listens while you've
-   switched it on.
+3. Hammerspoon menu bar icon → **Reload Config**. A **○ Slide Receiver** item appears
+   in the menu bar.
+4. Click **○ Slide Receiver** to start listening before your talk (it becomes
+   **● Slide Receiver** and an alert shows the advertised name, e.g.
+   `Clicker on YourMac`). Click it again to stop after — the receiver is off by
+   default and only listens while you've switched it on.
 
 **Sanity check** (no iPhone needed): switch the clicker on, start your slideshow, then
 in Terminal:
