@@ -23,9 +23,10 @@
 # (that is how your iPhone reaches this PC over Wi-Fi).
 #
 # Bonjour: Windows has none built in, so connect from SessionTimer with
-# "Enter IP manually" (find this PC's IP with: ipconfig). If Apple's Bonjour
-# for Windows happens to be installed (dns-sd.exe), this script advertises
-# itself like the macOS receivers do and shows up by name - best effort only.
+# "Enter IP manually" - this script prints this PC's address for you on start.
+# If Apple's Bonjour for Windows happens to be installed (dns-sd.exe), this
+# script advertises itself like the macOS receivers do and shows up by name -
+# best effort only.
 #
 # Note: on a company-managed PC, security policy (enforced Execution Policy,
 # AppLocker/WDAC) may prevent scripts like this from running at all - that is
@@ -41,6 +42,31 @@ $Keys = @{
 }
 
 $shell = New-Object -ComObject WScript.Shell
+
+# This PC's LAN IPv4 address(es), so you can type one into SessionTimer's
+# "Enter IP manually" without hunting through ipconfig. This READS THE LOCAL
+# ADAPTER CONFIGURATION directly (System.Net.NetworkInformation) - no shell
+# commands, no name resolution, no downloads; nothing leaves this machine and
+# no new capability is added (the listener below already binds every interface).
+# Only "up" adapters are considered; loopback and unconfigured link-local
+# (169.254.x) are filtered out. A PC with VPN/virtual adapters may list several,
+# so pick the one on the same Wi-Fi as your iPhone.
+function Get-LanIPv4 {
+    try {
+        [System.Net.NetworkInformation.NetworkInterface]::GetAllNetworkInterfaces() |
+            Where-Object {
+                $_.OperationalStatus -eq [System.Net.NetworkInformation.OperationalStatus]::Up -and
+                $_.NetworkInterfaceType -ne [System.Net.NetworkInformation.NetworkInterfaceType]::Loopback
+            } |
+            ForEach-Object { $_.GetIPProperties().UnicastAddresses } |
+            Where-Object { $_.Address.AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetwork } |
+            ForEach-Object { $_.Address.IPAddressToString } |
+            Where-Object { $_ -notmatch '^(127\.|169\.254\.)' } |
+            Select-Object -Unique
+    } catch {
+        @()
+    }
+}
 
 # Optional Bonjour advertisement via Apple's dns-sd.exe, if present (best effort).
 $bonjour = $null
@@ -58,6 +84,16 @@ if ($dnssd) {
 $listener = New-Object System.Net.Sockets.TcpListener([System.Net.IPAddress]::Any, $Port)
 $listener.Start()
 Write-Host "Clicker receiver listening on :$Port  (Ctrl-C to stop)"
+
+$ips = @(Get-LanIPv4)
+if ($ips.Count -eq 1) {
+    Write-Host "Enter this in SessionTimer -> Enter IP manually:  $($ips[0])  (port $Port)"
+} elseif ($ips.Count -gt 1) {
+    Write-Host "Enter one of these in SessionTimer -> Enter IP manually (the one on your Wi-Fi), port ${Port}:"
+    foreach ($ip in $ips) { Write-Host "    $ip" }
+} else {
+    Write-Host 'Could not determine this PC''s address - find it with: ipconfig'
+}
 
 try {
     while ($true) {
