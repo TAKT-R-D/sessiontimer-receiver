@@ -97,6 +97,15 @@ if ($ips.Count -eq 1) {
 
 try {
     while ($true) {
+        # Poll instead of calling the BLOCKING AcceptTcpClient() directly: PowerShell cannot
+        # process Ctrl-C while it is stuck inside a blocking .NET call, so a plain Accept loop
+        # ignores Ctrl-C until the next connection arrives. Pending() + an interruptible
+        # Start-Sleep gives the shell a gap to see the stop request (and to run the cleanup in
+        # `finally`). 50 ms costs nothing and keeps click latency imperceptible.
+        if (-not $listener.Pending()) {
+            Start-Sleep -Milliseconds 50
+            continue
+        }
         $client = $listener.AcceptTcpClient()
         try {
             $stream = $client.GetStream()
